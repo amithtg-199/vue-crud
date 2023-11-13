@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-deployment
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+     maxSurge: 2
+     maxUnavailable: 1
+  selector:
+    matchLabels:
+      name: node-pod
+  template:
+    metadata:
+      labels:
+        name: node-pod
+    spec:
+      containers:
+      - name: node-pod
+        image: amithtg/node_crud_app
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: .2
+            memory: 1Gi
+          limits:
+            cpu: .5
+            memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-service
+  labels:
+    name: node-service
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30004
+  selector:
+     name: node-pod
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: node-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: node-deployment
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: node-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - host: www.app.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: node-service
+                port:
+                  number: 80
