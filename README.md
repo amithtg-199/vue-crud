@@ -121,6 +121,8 @@ To get full user account, contact me on my <a href="http://id-a.pl" target="_bla
 
 Do you want to test the application quickly, and you do not have an API ready? No problem, you can use the ready-made example in the **examples** folder. The API for this example is available on the internet, so you can connect to it by entering its address in the configuration file.
 
+You can also follow the steps provided in Capstone_Project 2 to deploy the application on k8s and monitor via prometheus and Grafana.
+
 ### Steps
 
 1. Clone Vue CRUD:
