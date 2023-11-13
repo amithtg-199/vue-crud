@@ -7,6 +7,7 @@ COPY package*.json ./
 
 RUN npm install
 COPY . .
+RUN npm run load-template simple-crud
 RUN npm run build
 
 FROM nginx:stable-alpine as production-stage
